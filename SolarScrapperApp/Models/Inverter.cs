@@ -9,11 +9,11 @@ public class Inverter
     // Especificaciones eléctricas de entrada (DC)
     public decimal? VoltajeEntradaMaximo { get; set; }
     public decimal? VoltajeEntradaMinimo { get; set; }
-    public decimal? CorriemteEntradaMaxima { get; set; }
+    public decimal? CorrienteEntradaMaxima { get; set; }
     public decimal? PotenciaEntradaMaxima { get; set; }
     
     // Especificaciones eléctricas de salida (AC)
-    public decimal? VolajeSalidaNominal { get; set; }
+    public decimal? VoltajeSalidaNominal { get; set; }
     public decimal? PotenciaSalidaNominal { get; set; }
     public decimal? PotenciaSalidaMaxima { get; set; }
     public decimal? FrecuenciaSalida { get; set; }

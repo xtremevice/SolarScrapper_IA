@@ -26,7 +26,7 @@ public class DataExportService
         {
             // Exportar paneles solares
             var panelsPath = basePath.Replace(".csv", "_paneles.csv");
-            ExportPanelsToCsv(data.PanealesSolares, panelsPath);
+            ExportPanelsToCsv(data.PanelesSolares, panelsPath);
             
             // Exportar inversores
             var invertersPath = basePath.Replace(".csv", "_inversores.csv");
@@ -90,18 +90,18 @@ public class DataExportService
         Console.WriteLine(new string('=', 60));
         
         Console.WriteLine($"\n📊 Total de productos encontrados: {data.TotalProductos}");
-        Console.WriteLine($"   - Paneles solares: {data.PanealesSolares.Count}");
+        Console.WriteLine($"   - Paneles solares: {data.PanelesSolares.Count}");
         Console.WriteLine($"   - Inversores: {data.Inversores.Count}");
         
-        if (data.PanealesSolares.Any())
+        if (data.PanelesSolares.Any())
         {
             Console.WriteLine("\n☀️  PANELES SOLARES:");
-            foreach (var panel in data.PanealesSolares.Take(5))
+            foreach (var panel in data.PanelesSolares.Take(5))
             {
                 Console.WriteLine($"   • {panel}");
             }
-            if (data.PanealesSolares.Count > 5)
-                Console.WriteLine($"   ... y {data.PanealesSolares.Count - 5} más");
+            if (data.PanelesSolares.Count > 5)
+                Console.WriteLine($"   ... y {data.PanelesSolares.Count - 5} más");
         }
         
         if (data.Inversores.Any())

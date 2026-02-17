@@ -169,7 +169,7 @@ public class InverterScraper : WebScraperService
             var voltageOutMatch = Regex.Match(nodeText, @"(?:salida|output|AC).*?(\d{2,3})\s*[Vv]");
             if (voltageOutMatch.Success)
             {
-                inverter.VolajeSalidaNominal = ExtractNumber(voltageOutMatch.Groups[1].Value);
+                inverter.VoltajeSalidaNominal = ExtractNumber(voltageOutMatch.Groups[1].Value);
             }
             
             // Identificar tipo de inversor

@@ -45,7 +45,7 @@ class Program
         Console.WriteLine(new string('=', 60));
         
         var panels = await panelScraper.SearchMultipleUrlsAsync(allPanelUrls);
-        scrapedData.PanealesSolares = panels;
+        scrapedData.PanelesSolares = panels;
         
         // Buscar inversores
         Console.WriteLine("\n" + new string('=', 60));
