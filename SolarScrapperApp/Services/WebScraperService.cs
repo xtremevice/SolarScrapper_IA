@@ -8,6 +8,8 @@ public class WebScraperService
 {
     private readonly HttpClient _httpClient;
     private readonly HtmlWeb _htmlWeb;
+    protected readonly RateLimiterService _rateLimiter;
+    protected readonly KeywordDetectorService _keywordDetector;
 
     public WebScraperService()
     {
@@ -16,12 +18,17 @@ public class WebScraperService
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
         
         _htmlWeb = new HtmlWeb();
+        _rateLimiter = new RateLimiterService(minimumDelayMs: 2000, delayBetweenRequestsMs: 3000);
+        _keywordDetector = new KeywordDetectorService();
     }
 
     public async Task<HtmlDocument?> LoadWebPageAsync(string url)
     {
         try
         {
+            // Aplicar limitación de tasa para no sobrecargar el servidor
+            await _rateLimiter.WaitIfNeededAsync(url);
+            
             Console.WriteLine($"Cargando página: {url}");
             var document = await Task.Run(() => _htmlWeb.Load(url));
             return document;

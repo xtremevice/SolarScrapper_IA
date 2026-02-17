@@ -17,10 +17,37 @@ public class SolarPanelScraper : WebScraperService
             if (document == null)
                 return panels;
 
-            // Intentar múltiples estrategias de búsqueda de productos
-            panels.AddRange(ExtractPanelsUsingCommonSelectors(document, url));
+            // Usar detector de palabras clave para encontrar nodos relevantes
+            var relevantNodes = _keywordDetector.FindNodesWithPanelKeywords(document);
+            if (relevantNodes.Any())
+            {
+                Console.WriteLine($"🔍 Encontrados {relevantNodes.Count} nodos con palabras clave de paneles");
+                var topNodes = _keywordDetector.GetMostRelevantNodes(relevantNodes, isPanel: true, maxNodes: 20);
+                
+                foreach (var node in topNodes)
+                {
+                    var panel = ExtractPanelFromNode(node, url);
+                    if (panel != null && !string.IsNullOrEmpty(panel.Modelo))
+                    {
+                        panels.Add(panel);
+                    }
+                }
+            }
+
+            // Si no encontramos suficientes paneles, intentar con selectores comunes
+            if (panels.Count < 3)
+            {
+                var commonPanels = ExtractPanelsUsingCommonSelectors(document, url);
+                foreach (var panel in commonPanels)
+                {
+                    if (!panels.Any(p => p.Modelo == panel.Modelo && p.Marca == panel.Marca))
+                    {
+                        panels.Add(panel);
+                    }
+                }
+            }
             
-            // Si no encontramos paneles con selectores comunes, intentar extracción inteligente
+            // Si aún no encontramos paneles, intentar extracción inteligente
             if (panels.Count == 0)
             {
                 panels.AddRange(ExtractPanelsUsingIntelligentSearch(document, url));
@@ -202,8 +229,7 @@ public class SolarPanelScraper : WebScraperService
             allPanels.AddRange(panels);
             Console.WriteLine($"Encontrados {panels.Count} paneles");
             
-            // Pequeña pausa para no sobrecargar los servidores
-            await Task.Delay(2000);
+            // El rate limiter ya maneja las pausas automáticamente
         }
         
         return allPanels;

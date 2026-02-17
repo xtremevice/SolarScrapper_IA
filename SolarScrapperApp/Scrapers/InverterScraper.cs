@@ -17,10 +17,37 @@ public class InverterScraper : WebScraperService
             if (document == null)
                 return inverters;
 
-            // Intentar múltiples estrategias de búsqueda de productos
-            inverters.AddRange(ExtractInvertersUsingCommonSelectors(document, url));
+            // Usar detector de palabras clave para encontrar nodos relevantes
+            var relevantNodes = _keywordDetector.FindNodesWithInverterKeywords(document);
+            if (relevantNodes.Any())
+            {
+                Console.WriteLine($"🔍 Encontrados {relevantNodes.Count} nodos con palabras clave de inversores");
+                var topNodes = _keywordDetector.GetMostRelevantNodes(relevantNodes, isPanel: false, maxNodes: 20);
+                
+                foreach (var node in topNodes)
+                {
+                    var inverter = ExtractInverterFromNode(node, url);
+                    if (inverter != null && !string.IsNullOrEmpty(inverter.Modelo))
+                    {
+                        inverters.Add(inverter);
+                    }
+                }
+            }
+
+            // Si no encontramos suficientes inversores, intentar con selectores comunes
+            if (inverters.Count < 3)
+            {
+                var commonInverters = ExtractInvertersUsingCommonSelectors(document, url);
+                foreach (var inverter in commonInverters)
+                {
+                    if (!inverters.Any(i => i.Modelo == inverter.Modelo && i.Marca == inverter.Marca))
+                    {
+                        inverters.Add(inverter);
+                    }
+                }
+            }
             
-            // Si no encontramos inversores con selectores comunes, intentar extracción inteligente
+            // Si aún no encontramos inversores, intentar extracción inteligente
             if (inverters.Count == 0)
             {
                 inverters.AddRange(ExtractInvertersUsingIntelligentSearch(document, url));
@@ -227,8 +254,7 @@ public class InverterScraper : WebScraperService
             allInverters.AddRange(inverters);
             Console.WriteLine($"Encontrados {inverters.Count} inversores");
             
-            // Pequeña pausa para no sobrecargar los servidores
-            await Task.Delay(2000);
+            // El rate limiter ya maneja las pausas automáticamente
         }
         
         return allInverters;
